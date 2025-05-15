@@ -17,9 +17,60 @@ stored.
 5. Map the IP address with its MAC address and return the MAC address to client.
 P
 ## PROGRAM - ARP
+```
+import socket
+
+# Mock MAC address database
+ARP_TABLE = {
+    "192.168.1.1": "00:1A:2B:3C:4D:5E",
+    "192.168.1.2": "00:1A:2B:3C:4D:5F",
+    "192.168.1.3": "00:1A:2B:3C:4D:5G",
+}
+
+def start_server():
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind(('localhost', 12345))  # Bind to localhost and port 12345
+    print("Server is running...")
+
+    while True:
+        # Receive data from client
+        data, addr = server_socket.recvfrom(1024)
+        ip_address = data.decode('utf-8')
+        print(f"Received IP address: {ip_address} from {addr}")
+
+        # Lookup MAC address
+        mac_address = ARP_TABLE.get(ip_address, "Not Found")
+        server_socket.sendto(mac_address.encode('utf-8'), addr)
+
+if __name__ == "__main__":
+    start_server()
+```
 ## OUPUT - ARP
+![image](https://github.com/user-attachments/assets/08111c7f-b784-4d2a-82b4-f4bf9000a05b)
+
 ## PROGRAM - RARP
+```
+import socket
+
+def request_mac_address(ip_address):
+    # Create a socket object
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    # Send IP address to server
+    client_socket.sendto(ip_address.encode('utf-8'), ('localhost', 12345))
+
+    # Receive MAC address from server
+    mac_address, _ = client_socket.recvfrom(1024)
+    print(f"MAC address for {ip_address} is: {mac_address.decode('utf-8')}")
+
+if __name__ == "__main__":
+    ip_to_lookup = input("Enter the IP address to convert to MAC address: ")
+    request_mac_address(ip_to_lookup)
+```
 ## OUPUT -RARP
+![image](https://github.com/user-attachments/assets/bd33657a-daa8-410f-882f-cc5d86487b43)
+
 ## RESULT
 Thus, the python program for simulating ARP protocols using TCP was successfully 
 executed.
